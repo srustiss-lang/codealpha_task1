@@ -1,0 +1,169 @@
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+// ---------------- Transaction Class ----------------
+class Transaction {
+    string type;       // Deposit / Withdraw / Transfer
+    double amount;
+    string note;
+
+public:
+    Transaction(string t, double a, string n = "")
+        : type(t), amount(a), note(n) {}
+
+    void display() const {
+        cout << type << " of $" << amount;
+        if (!note.empty()) cout << " (" << note << ")";
+        cout << endl;
+    }
+};
+
+// ---------------- Account Class ----------------
+class Account {
+    int accountNumber;
+    double balance;
+    vector<Transaction> history;
+
+public:
+    Account(int accNo, double bal = 0.0)
+        : accountNumber(accNo), balance(bal) {}
+
+    int getAccountNumber() const { return accountNumber; }
+    double getBalance() const { return balance; }
+
+    void deposit(double amount) {
+        balance += amount;
+        history.emplace_back("Deposit", amount);
+        cout << "✅ Deposited $" << amount << " successfully.\n";
+    }
+
+    void withdraw(double amount) {
+        if (amount > balance) {
+            cout << "❌ Insufficient balance!\n";
+            return;
+        }
+        balance -= amount;
+        history.emplace_back("Withdrawal", amount);
+        cout << "✅ Withdrew $" << amount << " successfully.\n";
+    }
+
+    void transfer(Account &toAccount, double amount) {
+        if (amount > balance) {
+            cout << "❌ Insufficient balance for transfer!\n";
+            return;
+        }
+        balance -= amount;
+        toAccount.balance += amount;
+        history.emplace_back("Transfer Sent", amount, "To Acc#" + to_string(toAccount.getAccountNumber()));
+        toAccount.history.emplace_back("Transfer Received", amount, "From Acc#" + to_string(accountNumber));
+        cout << "✅ Transferred $" << amount << " to Account #" << toAccount.getAccountNumber() << ".\n";
+    }
+
+    void displayInfo() const {
+        cout << "\n--- Account Information ---\n";
+        cout << "Account Number: " << accountNumber << endl;
+        cout << "Balance: $" << balance << endl;
+    }
+
+    void showTransactions() const {
+        cout << "\n--- Transaction History for Account #" << accountNumber << " ---\n";
+        if (history.empty()) {
+            cout << "No transactions yet.\n";
+            return;
+        }
+        for (const auto &t : history) {
+            t.display();
+        }
+    }
+};
+
+// ---------------- Customer Class ----------------
+class Customer {
+    string name;
+    int customerID;
+    vector<Account> accounts;
+
+public:
+    Customer(string n, int id) : name(n), customerID(id) {}
+
+    void createAccount(int accNo, double initialBalance = 0.0) {
+        accounts.emplace_back(accNo, initialBalance);
+        cout << "✅ Account #" << accNo << " created for " << name << " with initial balance $" << initialBalance << ".\n";
+    }
+
+    Account* getAccount(int accNo) {
+        for (auto &acc : accounts) {
+            if (acc.getAccountNumber() == accNo)
+                return &acc;
+        }
+        return nullptr;
+    }
+
+    void displayCustomerInfo() const {
+        cout << "\n--- Customer Info ---\n";
+        cout << "Name: " << name << endl;
+        cout << "Customer ID: " << customerID << endl;
+        cout << "Number of Accounts: " << accounts.size() << endl;
+    }
+};
+
+// ---------------- Main Program ----------------
+int main() {
+    Customer c1("Alice", 101);
+    c1.createAccount(1001, 500);   // Account with initial balance
+    c1.createAccount(1002, 1000);
+
+    Account* acc1 = c1.getAccount(1001);
+    Account* acc2 = c1.getAccount(1002);
+
+    if (acc1 && acc2) {
+        acc1->deposit(200);
+        acc1->withdraw(100);
+        acc1->transfer(*acc2, 250);
+
+        acc1->displayInfo();
+        acc1->showTransactions();
+
+        acc2->displayInfo();
+        acc2->showTransactions();
+    }
+
+    c1.displayCustomerInfo();
+
+    return 0;
+}
+
+
+output:
+
+Γ£à Account #1001 created for Alice with initial balance $500.
+Γ£à Account #1002 created for Alice with initial balance $1000.
+Γ£à Deposited $200 successfully.
+Γ£à Withdrew $100 successfully.
+Γ£à Transferred $250 to Account #1002.
+
+--- Account Information ---
+Account Number: 1001
+Balance: $350
+
+--- Transaction History for Account #1001 ---
+Deposit of $200
+Withdrawal of $100
+Transfer Sent of $250 (To Acc#1002)
+
+--- Account Information ---
+Account Number: 1002
+Balance: $1250
+
+--- Transaction History for Account #1002 ---
+Transfer Received of $250 (From Acc#1001)
+
+--- Customer Info ---
+Name: Alice
+Customer ID: 101
+Number of Accounts: 2
+
+Process returned 0 (0x0)   execution time : 2.466 s
+Press any key to continue.

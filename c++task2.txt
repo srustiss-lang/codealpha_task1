@@ -1,0 +1,159 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <map>
+using namespace std;
+
+// File where all user credentials will be stored
+const string DATABASE_FILE = "users.txt";
+
+// Function to check if username already exists
+bool usernameExists(const string &username) {
+    ifstream file(DATABASE_FILE);
+    string storedUser, storedPass;
+    while (file >> storedUser >> storedPass) {
+        if (storedUser == username) {
+            return true; // Duplicate found
+        }
+    }
+    return false;
+}
+
+// Registration function
+void registerUser() {
+    string username, password;
+    cout << "\n--- Registration ---\n";
+    cout << "Enter username: ";
+    cin >> username;
+    cout << "Enter password: ";
+    cin >> password;
+
+    // Validate non-empty
+    if (username.empty() || password.empty()) {
+        cout << "❌ Username/Password cannot be empty.\n";
+        return;
+    }
+
+    // Check duplicates
+    if (usernameExists(username)) {
+        cout << "❌ Username already exists. Try another.\n";
+        return;
+    }
+
+    // Store credentials
+    ofstream file(DATABASE_FILE, ios::app);
+    file << username << " " << password << "\n";
+    file.close();
+
+    cout << "✅ Registration successful!\n";
+}
+
+// Login function
+void loginUser() {
+    string username, password;
+    cout << "\n--- Login ---\n";
+    cout << "Enter username: ";
+    cin >> username;
+    cout << "Enter password: ";
+    cin >> password;
+
+    ifstream file(DATABASE_FILE);
+    string storedUser, storedPass;
+    bool success = false;
+
+    while (file >> storedUser >> storedPass) {
+        if (storedUser == username && storedPass == password) {
+            success = true;
+            break;
+        }
+    }
+
+    file.close();
+
+    if (success) {
+        cout << "✅ Login successful. Welcome, " << username << "!\n";
+    } else {
+        cout << "❌ Invalid username or password.\n";
+    }
+}
+
+int main() {
+    int choice;
+    while (true) {
+        cout << "\n--- User System Menu ---\n";
+        cout << "1. Register\n2. Login\n3. Exit\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                registerUser();
+                break;
+            case 2:
+                loginUser();
+                break;
+            case 3:
+                cout << "Exiting program...\n";
+                return 0;
+            default:
+                cout << "❌ Invalid choice. Try again.\n";
+        }
+    }
+}
+
+
+output:
+
+--- User System Menu ---
+1. Register
+2. Login
+3. Exit
+Enter choice: 1
+
+--- Registration ---
+Enter username: alice
+Enter password: 1234
+Γ¥î Username already exists. Try another.
+
+--- User System Menu ---
+1. Register
+2. Login
+3. Exit
+Enter choice: 1
+
+--- Registration ---
+Enter username: alice
+Enter password: 9999
+Γ¥î Username already exists. Try another.
+
+--- User System Menu ---
+1. Register
+2. Login
+3. Exit
+Enter choice: 2
+
+--- Login ---
+Enter username: alice
+Enter password: 1234
+Γ£à Login successful. Welcome, alice!
+
+--- User System Menu ---
+1. Register
+2. Login
+3. Exit
+Enter choice: 2
+
+--- Login ---
+Enter username: alice
+Enter password: wrongpass
+Γ¥î Invalid username or password.
+
+--- User System Menu ---
+1. Register
+2. Login
+3. Exit
+Enter choice: 3
+Exiting program...
+
+Process returned 0 (0x0)   execution time : 75.110 s
+Press any key to continue.

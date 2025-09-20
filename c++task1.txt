@@ -1,0 +1,79 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    int n;
+    cout << "Enter number of courses taken: ";
+    cin >> n;
+
+    vector<double> grades(n);
+    vector<int> credits(n);
+
+    double totalGradePoints = 0;
+    int totalCredits = 0;
+
+    // Input course details
+    for (int i = 0; i < n; i++) {
+        cout << "\nCourse " << i + 1 << ":\n";
+        cout << "Enter grade (e.g., 9.0 for A, 8.0 for B, etc.): ";
+        cin >> grades[i];
+        cout << "Enter credit hours: ";
+        cin >> credits[i];
+
+        totalGradePoints += grades[i] * credits[i];
+        totalCredits += credits[i];
+    }
+
+    // Calculate GPA
+    double gpa = 0.0;
+    if (totalCredits > 0) {
+        gpa = totalGradePoints / totalCredits;
+    }
+
+    double cgpa = gpa; // Assuming one semester only (extendable to multiple semesters)
+
+    // Display results
+    cout << "\n--- Semester Report ---\n";
+    for (int i = 0; i < n; i++) {
+        cout << "Course " << i + 1 << ": Grade = " << grades[i]
+             << ", Credit Hours = " << credits[i] << "\n";
+    }
+
+    cout << "\nTotal Credits: " << totalCredits << endl;
+    cout << "Total Grade Points: " << totalGradePoints << endl;
+    cout << "GPA this semester: " << gpa << endl;
+    cout << "Overall CGPA: " << cgpa << endl;
+
+    return 0;
+}
+
+
+output:
+
+Enter number of courses taken: 3
+
+Course 1:
+Enter grade (e.g., 9.0 for A, 8.0 for B, etc.): 9.0
+Enter credit hours: 3
+
+Course 2:
+Enter grade (e.g., 9.0 for A, 8.0 for B, etc.): 8.0
+Enter credit hours: 4
+
+Course 3:
+Enter grade (e.g., 9.0 for A, 8.0 for B, etc.): 7.0
+Enter credit hours: 3
+
+--- Semester Report ---
+Course 1: Grade = 9, Credit Hours = 3
+Course 2: Grade = 8, Credit Hours = 4
+Course 3: Grade = 7, Credit Hours = 3
+
+Total Credits: 10
+Total Grade Points: 80
+GPA this semester: 8
+Overall CGPA: 8
+
+Process returned 0 (0x0)   execution time : 23.026 s
+Press any key to continue.
